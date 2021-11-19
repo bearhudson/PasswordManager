@@ -1,3 +1,11 @@
 # Password Manager
 
-No one should use this yet. 
+```shell
+It's as secure as the wind between your cheeks.
+```
+
+AKA 
+
+#### Don't use this.
+
+It works. Barely. 
