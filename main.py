@@ -2,11 +2,12 @@
 
 from tkinter import *
 from tkinter import ttk
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showerror, askokcancel
 import random
 import string
 import pandas
 import os
+import pyperclip
 
 WHITE = "#ffffff"
 FONT_NAME = "Courier"
@@ -47,9 +48,9 @@ class PasswordManager():
             self.site_list_index += 1
         self.url_list.bind("<<ListboxSelect>>", self.listbox_select)
         self.url_list.grid(row=6, column=0, columnspan=5)
-        self.website_label = Label(text="Website").grid(row=3, column=0)
-        self.login_label = Label(text="Login").grid(row=4, column=0)
-        self.password_label = Label(text="Password").grid(row=5, column=0)
+        self.website_label = Label(text="Website    ▶").grid(row=3, column=0)
+        self.login_label = Label(text="Login        ▶").grid(row=4, column=0)
+        self.password_label = Label(text="Password  ▶").grid(row=5, column=0)
 
         for child in self.mainframe.winfo_children():
             child.grid_configure(padx=20, pady=20)
@@ -66,6 +67,7 @@ class PasswordManager():
             self.temp_pw.append(random.choice(self.char_string))
         random.shuffle(self.temp_pw)
         self.new_pw = "".join(self.temp_pw)
+        pyperclip.copy(self.new_pw)
         self.password_entry.delete(0, END)
         self.password_entry.insert(0, string=self.new_pw)
 
@@ -76,14 +78,16 @@ class PasswordManager():
         if self.current_site == "" or self.current_login == "" or self.current_password == "":
             self.popup_error("Please enter all three fields")
         else:
-            self.new_df = pandas.DataFrame({
-                'site': [self.current_site],
-                'login': [self.current_login],
-                'password': [self.current_password]
-            })
-            self.pw_list = self.new_df.to_csv('password_list.csv', mode='a', index=False, header=False)
-            self.python = sys.executable
-            os.execl(self.python, self.python, * sys.argv)
+            is_ok = askokcancel(title=self.current_site, message=f"Press OK to continue:\nSite: {self.current_site}\nLogin: {self.current_login}\nPassword: {self.current_password}")
+            if is_ok:
+                self.new_df = pandas.DataFrame({
+                    'site': [self.current_site],
+                    'login': [self.current_login],
+                    'password': [self.current_password]
+                })
+                self.pw_list = self.new_df.to_csv('password_list.csv', mode='a', index=False, header=False)
+                self.python = sys.executable
+                os.execl(self.python, self.python, * sys.argv)
 
     def get_site_list(self):
         return password_list_df['site'].to_list()
@@ -92,7 +96,7 @@ class PasswordManager():
         print(obj)
 
     def popup_error(self, error_string):
-        showinfo(title="Error", message=f"Error: {error_string}")
+        showerror(title="Error", message=f"Error: {error_string}")
 
 
 password_list_df = pandas.read_csv('password_list.csv')
