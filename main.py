@@ -118,19 +118,17 @@ class PasswordManager():
     def listbox_select(self, listbox_select_site):
         with open("data.json", "r") as json_file:
             self.json_file_data = json.load(json_file)
-        print(type(self.json_file_data))
         if listbox_select_site in self.json_file_data:
             login = self.json_file_data[listbox_select_site]['login']
-            password = self.json_file_data[listbox_select_site]['password']
+            self.current_password = self.json_file_data[listbox_select_site]['password']
         self.site_entry.delete(0, END)
         self.site_entry.insert(0, listbox_select_site)
         self.login_entry.delete(0, END)
         self.login_entry.insert(0, login)
-        self.password_entry.delete(0, END)
-        self.password_entry.insert(0, password)
 
     def show_password(self):
-        pass
+        self.password_entry.delete(0, END)
+        self.password_entry.insert(0, self.current_password)
 
 
 root = Tk()
