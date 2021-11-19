@@ -1,6 +1,6 @@
 # Password Manager
 
-```shell
+```code
 It's as secure as the wind between your cheeks.
 ```
 
