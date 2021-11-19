@@ -8,6 +8,7 @@ import string
 import pandas
 import os
 import pyperclip
+import json
 
 WHITE = "#ffffff"
 FONT_NAME = "Courier"
@@ -75,10 +76,20 @@ class PasswordManager():
         self.current_site = self.site_entry.get()
         self.current_login = self.login_entry.get()
         self.current_password = self.password_entry.get()
+        self.current_data_json = {
+            self.current_site: {
+            "login": self.current_login,
+            "password": self.current_password
+            }
+        }
         if self.current_site == "" or self.current_login == "" or self.current_password == "":
             self.popup_error("Please enter all three fields")
         else:
-            is_ok = askokcancel(title=self.current_site, message=f"Press OK to continue:\nSite: {self.current_site}\nLogin: {self.current_login}\nPassword: {self.current_password}")
+            is_ok = askokcancel(title=self.current_site,
+                                message=f"Press OK to continue:\n"
+                                        f"Site: {self.current_site}\n"
+                                        f"Login: {self.current_login}\n"
+                                        f"Password: {self.current_password}")
             if is_ok:
                 self.new_df = pandas.DataFrame({
                     'site': [self.current_site],
@@ -86,8 +97,19 @@ class PasswordManager():
                     'password': [self.current_password]
                 })
                 self.pw_list = self.new_df.to_csv('password_list.csv', mode='a', index=False, header=False)
-                self.python = sys.executable
-                os.execl(self.python, self.python, * sys.argv)
+                try:
+                    with open("data.json", "r") as json_file:
+                        self.json_file_data = json.load(json_file)
+                except FileNotFoundError:
+                    with open("data.json", "a") as json_file:
+                        json.dump(self.current_data_json, json_file, indent=4)
+                else:
+                    self.json_file_data.update(self.current_data_json)
+                    with open("data.json", "w") as json_file:
+                        json.dump(self.json_file_data, json_file, indent=4)
+                finally:
+                    self.python = sys.executable
+                    os.execl(self.python, self.python, * sys.argv)
 
     def get_site_list(self):
         return password_list_df['site'].to_list()
