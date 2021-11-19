@@ -1,6 +1,6 @@
 {
-  "amazon.com": {
-    "login": "testing",
-    "password": "password"
-  }
+    "dont-use-amazon.com": {
+        "login": "testing@testing.com",
+        "password": "ThisIsNotYourPassword"
+    }
 }
